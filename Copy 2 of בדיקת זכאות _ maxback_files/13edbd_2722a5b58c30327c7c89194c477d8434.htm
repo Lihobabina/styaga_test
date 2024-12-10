@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בדיקת זכאות להחזר מס</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #1d67cd;
+            --primary-light: #2476e2;
+            --primary-hover: #1857ac;
+            --bg-blue-light: #F5F8FF;
+            --bg-main: #FAFBFF;
+            --text-primary: #0B1C42;
+            --text-secondary: #3F4C6B;
+            --border-light: #E6EEFF;
+            --card-shadow: 0 8px 24px rgba(29, 103, 205, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Rubik', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-main) 0%, #FFFFFF 100%);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 580px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .welcome-screen {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            text-align: center;
+            padding: 2rem 1rem;
+            padding-top: 4rem;
+        }
+
+        .welcome-screen h1 {
+            font-size: 3.2rem;
+            line-height: 1.2;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .welcome-screen p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+        }
+
+        .start-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(29, 103, 205, 0.15);
+        }
+
+        .start-button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(29, 103, 205, 0.2);
+        }
+
+        .quiz-screen {
+            display: none;
+            padding: 1.5rem 0;
+            min-height: 100vh;
+        }
+
+        .progress-section {
+            position: sticky;
+            top: 0;
+            background: var(--bg-main);
+            padding: 1rem 0;
+            margin-bottom: 1.5rem;
+            z-index: 10;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 4px 12px rgba(29, 103, 205, 0.08);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .progress-container {
+            background: var(--bg-blue-light);
+            height: 6px;
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 5%;
+            border-radius: 100px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1rem;
+            position: relative;
+            border: 1px solid var(--border-light);
+        }
+
+        .question {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            text-align: center;
+            padding-top: 1.5rem;
+        }
+
+        .question-note {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .back-button:hover {
+            background: var(--bg-blue-light);
+            color: var(--primary);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: stretch;
+        }
+
+        .option-button {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: white;
+            border: 1.5px solid var(--border-light);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            font-size: 1.0625rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .option-button:hover {
+            border-color: var(--primary);
+            background: var(--bg-blue-light);
+            transform: translateY(-1px);
+        }
+
+        .option-button.selected {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid currentColor;
+            border-radius: 6px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            background: transparent;
+        }
+
+        .option-button.selected .checkbox {
+            border-color: white;
+            background: white;
+        }
+
+        .option-button.selected .checkbox::after {
+            content: '✓';
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .continue-button {
+            margin: 1rem auto 0;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .continue-button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .continue-button svg {
+            width: 16px;
+            height: 16px;
+            transform: scaleX(-1);
+        }
+
+        /* סגנונות עבור מסך 'לא זכאי' */
+        .not-eligible-message {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .not-eligible-message .submit-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1.5rem;
+            font-family: 'Rubik', sans-serif;
+            box-shadow: 0 4px 12px rgba(29, 103, 205, 0.15);
+        }
+
+        .not-eligible-message .submit-button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(29, 103, 205, 0.2);
+        }
+
+        /* סגנונות עבור שדות קלט */
+        .form-input {
+            width: 100%;
+            padding: 0.875rem;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            font-size: 1rem;
+            color: var(--text-primary);
+            background: var(--bg-blue-light);
+            transition: all 0.2s ease;
+            text-align: right;
+            font-family: 'Rubik', sans-serif;
+        }
+
+        @media (max-width: 768px) {
+            .welcome-screen h1 {
+                font-size: 2.5rem;
+            }
+
+            .welcome-screen p {
+                font-size: 1.125rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .question {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-screen" id="welcomeScreen">
+            <h1>בדיקת זכאות<br>להחזר מס</h1>
+            <p>תוך 60 שניות תגלו האם מגיע לכם החזר מס</p>
+            <button class="start-button" onclick="startQuiz()">שנתחיל?</button>
+        </div>
+
+        <div class="quiz-screen" id="quizScreen">
+            <div class="progress-section">
+                <div class="progress-info">
+                    <span id="progressPercent">0%</span>
+                    <span id="questionNumber">שאלה 1 מתוך 12</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+
+            <main class="card">
+                <div id="questionContainer">
+                    <!-- תוכן דינמי יוכנס כאן -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+
+<script>
+const questions = [
+    {
+        id: 'employment_status',
+        question: "האם עבדת כשכיר/ה ב-6 השנים האחרונות?",
+        type: "single",
+        options: ["כן", "לא"],
+        weight: 5,
+        isBase: true
+    },
+    {
+        id: 'job_changes',
+        question: "האם החלפת או עזבת מקום עבודה ב-6 השנים האחרונות?",
+        type: "single",
+        options: ["כן", "לא"],
+        weight: 4,
+        score: 30
+    },
+    {
+        id: 'multiple_jobs',
+        question: "האם עבדת ביותר ממקום עבודה אחד במקביל?",
+        type: "single",
+        options: ["כן", "לא"],
+        weight: 3,
+        score: 25
+    },
+    {
+        id: 'salary_level',
+        question: "מה רמת השכר החודשי שלך (ברוטו)?",
+        type: "single",
+        options: [
+            "מתחת ל-7,500 ₪",
+            "בין 7,500 ₪ ל-10,300 ₪",
+            "בין 10,300 ₪ ל-15,000 ₪",
+            "מעל 15,000 ₪"
+        ],
+        weight: 3,
+        score: 15
+    },
+    {
+        id: 'private_savings',
+        question: "האם קיימות הפרשות פרטיות לאחד מהבאים?",
+        questionNote: "לא מטעם מקום העבודה",
+        type: "multiple",
+        options: [
+            "קרן פנסיה פרטית",
+            "קופת גמל להשקעה",
+            "ביטוח חיים",
+            "ביטוח משכנתא",
+            "קרן השתלמות פרטית",
+            "לא קיימות הפרשות פרטיות"
+        ],
+        weight: 4,
+        score: 20
+    },
+    {
+        id: 'property_tax',
+        question: "האם מכרת נכס ושילמת מס שבח ב-6 השנים האחרונות?",
+        type: "single",
+        options: ["כן", "לא"],
+        weight: 4,
+        score: 35
+    },
+    {
+        id: 'capital_market',
+        question: "האם יש לך השקעות בשוק ההון?",
+        type: "single",
+        options: ["כן", "לא"],
+        weight: 3,
+        score: 15
+    },
+    {
+        id: 'special_credits',
+        question: "האם אחד מהמצבים הבאים רלוונטי עבורך?",
+        type: "multiple",
+        options: [
+            "עולה חדש/ה (עד 42 חודשים מהעלייה)",
+            "תושב/ת חוזר/ת",
+            "שירות צבאי ב-6 השנים האחרונות",
+            "הורה חד הורי/ת",
+            "משלם/ת מזונות",
+            "אף אחד מהנ״ל"
+        ],
+        weight: 4,
+        score: 25
+    },
+    {
+        id: 'education',
+        question: "האם סיימת לימודי תואר או תעודה ב-7 השנים האחרונות?",
+        type: "single",
+        options: ["כן", "לא"],
+        weight: 3,
+        score: 20
+    },
+    {
+        id: 'medical_status',
+        question: "האם אחד מהמצבים הבאים רלוונטי?",
+        type: "multiple",
+        options: [
+            "נכות מעל 90%",
+            "קרוב/ת משפחה נטול/ת יכולת",
+            "הורה במוסד סיעודי",
+            "קרוב/ת משפחה של חלל/ת פעולות איבה",
+            "הוצאות רפואיות קבועות מעל 1,500 ₪ בשנה",
+            "אף אחד מהנ״ל"
+        ],
+        weight: 5,
+        score: 40
+    },
+    {
+        id: 'residence',
+        question: "האם גרת ביישוב מוטב (זכאי להטבות מס) ב-6 השנים האחרונות?",
+        type: "single",
+        options: ["כן", "לא"],
+        weight: 3,
+        score: 20
+    }
+];
+
+let currentQuestion = 0;
+let userAnswers = {};
+let totalScore = 0;
+
+function startQuiz() {
+    document.getElementById('welcomeScreen').style.display = 'none';
+    document.getElementById('quizScreen').style.display = 'block';
+    displayQuestion();
+}
+
+function displayQuestion() {
+    const question = questions[currentQuestion];
+    const container = document.getElementById('questionContainer');
+    updateProgressInfo();
+    
+    if (question.isBase && userAnswers[question.id] === 1) {
+        showNotEligibleResult();
+        return;
+    }
+
+    let html = '';
+    
+    if (currentQuestion > 0) {
+        html += `
+            <button class="back-button" onclick="goBack()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 5l7 7-7 7"/>
+                </svg>
+                חזרה
+            </button>
+        `;
+    }
+
+    html += `
+        <div class="question">${question.question}</div>
+        ${question.questionNote ? `<div class="question-note">${question.questionNote}</div>` : ''}
+        <div class="options-container">
+    `;
+
+    if (question.type === "single") {
+        question.options.forEach((option, index) => {
+            html += `
+                <button class="option-button ${userAnswers[question.id] === index ? 'selected' : ''}" 
+                        onclick="selectOption('${question.id}', ${index})">
+                    <span class="checkbox"></span>
+                    ${option}
+                </button>
+            `;
+        });
+    } else {
+        question.options.forEach((option, index) => {
+            const isSelected = userAnswers[question.id] && userAnswers[question.id].includes(index);
+            html += `
+                <button class="option-button ${isSelected ? 'selected' : ''}" 
+                        onclick="toggleOption('${question.id}', ${index}, ${index === question.options.length - 1})">
+                    <span class="checkbox"></span>
+                    ${option}
+                </button>
+            `;
+        });
+
+        if (userAnswers[question.id] && userAnswers[question.id].length > 0 && 
+            !userAnswers[question.id].includes(question.options.length - 1)) {
+            html += `
+                <button onclick="nextQuestion()" class="continue-button">
+                    המשך
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            `;
+        }
+    }
+
+    html += `</div>`;
+    container.innerHTML = html;
+}
+
+function updateProgressInfo() {
+    const totalQuestions = questions.length;
+    const progressStep = 95 / (totalQuestions - 1);
+    const progress = 5 + (currentQuestion * progressStep);
+    
+    document.getElementById('questionNumber').textContent = `שאלה ${currentQuestion + 1} מתוך ${totalQuestions}`;
+    document.getElementById('progressPercent').textContent = `${Math.round(progress)}%`;
+    document.getElementById('progressBar').style.width = `${progress}%`;
+}
+
+function goBack() {
+    if (currentQuestion > 0) {
+        currentQuestion--;
+        displayQuestion();
+    }
+}
+
+function selectOption(questionId, index) {
+    userAnswers[questionId] = index;
+    calculateScore();
+    displayQuestion();
+    
+    setTimeout(() => {
+        if (questions[currentQuestion].isBase && index === 1) {
+            showNotEligibleResult();
+        } else if (currentQuestion < questions.length - 1) {
+            nextQuestion();
+        } else {
+            showResults();
+        }
+    }, 400);
+}
+
+function toggleOption(questionId, index, isLastOption) {
+    if (!userAnswers[questionId]) {
+        userAnswers[questionId] = [];
+    }
+    
+    if (isLastOption) {
+        userAnswers[questionId] = [index];
+        calculateScore();
+        displayQuestion();
+        setTimeout(() => nextQuestion(), 400);
+    } else {
+        const answerIndex = userAnswers[questionId].indexOf(index);
+        const lastOptionIndex = questions[currentQuestion].options.length - 1;
+        const noneIndex = userAnswers[questionId].indexOf(lastOptionIndex);
+        
+        if (noneIndex !== -1) {
+            userAnswers[questionId].splice(noneIndex, 1);
+        }
+        
+        if (answerIndex === -1) {
+            userAnswers[questionId].push(index);
+        } else {
+            userAnswers[questionId].splice(answerIndex, 1);
+        }
+        
+        calculateScore();
+        displayQuestion();
+    }
+}
+
+function calculateScore() {
+    totalScore = 0;
+    let eligibilityFactors = [];
+    
+    Object.entries(userAnswers).forEach(([questionId, answer]) => {
+        const question = questions.find(q => q.id === questionId);
+        if (question && question.score) {
+            if (Array.isArray(answer)) {
+                if (answer.length > 0 && !answer.includes(question.options.length - 1)) {
+                    totalScore += question.score;
+                    eligibilityFactors.push(question.id);
+                }
+            } else if (questionId === 'salary_level') {
+                if (answer >= 1) {
+                    totalScore += question.score;
+                    eligibilityFactors.push(question.id);
+                }
+                if (answer >= 2) totalScore += 5;
+                if (answer >= 3) totalScore += 5;
+            } else {
+                if (answer === 0) {
+                    totalScore += question.score;
+                    eligibilityFactors.push(question.id);
+                }
+            }
+        }
+    });
+
+    return eligibilityFactors;
+}
+
+function nextQuestion() {
+    if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        displayQuestion();
+    } else {
+        showResults();
+    }
+}
+</script>
+<script>
+function showResults() {
+    const eligibilityFactors = calculateScore();
+    const isEligible = determineEligibility(eligibilityFactors);
+    const estimatedRefund = calculateEstimatedRefund(eligibilityFactors);
+    const container = document.getElementById('questionContainer');
+    
+    container.innerHTML = `
+        <div class="result-container ${isEligible ? 'eligible' : 'not-eligible'}">
+            <div class="result-header">
+                ${isEligible ? 
+                    `<h2 class="result-title">נמצאה זכאות להחזר מס!</h2>
+                     <div class="estimated-refund">
+                         <span class="amount">₪${estimatedRefund.toLocaleString()}</span>
+                         <span class="subtitle">החזר מס פוטנציאלי</span>
+                     </div>`
+                    :
+                    `<h2 class="result-title">לא נמצאה זכאות להחזר מס</h2>`
+                }
+            </div>
+            
+            <div class="result-details">
+                <p class="form-title">השאירו פרטים ונחזור אליכם עם מידע מפורט על הזכאות שלכם:</p>
+                
+                <div class="form-group">
+                    <input type="text" id="fullName" placeholder="שם מלא" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <input type="tel" id="phone" placeholder="טלפון נייד" class="form-input" 
+                           pattern="[0-9]{10}" title="נא להזין מספר טלפון תקין" required>
+                </div>
+                
+                <button onclick="submitForm()" class="submit-button">
+                    שליחה
+                </button>
+            </div>
+        </div>
+    `;
+
+    // הוספת סגנונות למסך התוצאות
+    if (!document.getElementById('result-styles')) {
+        const style = document.createElement('style');
+        style.id = 'result-styles';
+        style.textContent = `
+            .result-container {
+                text-align: center;
+                padding: 2rem 0;
+            }
+            
+            .result-header {
+                margin-bottom: 2.5rem;
+            }
+            
+            .result-title {
+                font-size: 1.75rem;
+                font-weight: 700;
+                color: var(--primary);
+                margin-bottom: 1.5rem;
+                font-family: 'Rubik', sans-serif;
+            }
+            
+            .estimated-refund {
+                background: linear-gradient(145deg, #e8f3ff 0%, #f5f8ff 100%);
+                padding: 1.5rem;
+                border-radius: 16px;
+                margin-top: 1.5rem;
+            }
+            
+            .estimated-refund .amount {
+                display: block;
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: var(--primary);
+                margin-bottom: 0.5rem;
+                font-family: 'Rubik', sans-serif;
+            }
+            
+            .estimated-refund .subtitle {
+                color: var(--text-secondary);
+                font-size: 1.125rem;
+                font-family: 'Rubik', sans-serif;
+            }
+            
+            .result-details {
+                max-width: 420px;
+                margin: 0 auto;
+            }
+
+            .form-title {
+                color: var(--text-secondary);
+                font-size: 1.125rem;
+                margin-bottom: 1.5rem;
+                font-family: 'Rubik', sans-serif;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .form-input {
+                width: 100%;
+                padding: 0.875rem;
+                border: 1px solid var(--border-light);
+                border-radius: 12px;
+                font-size: 1rem;
+                color: var(--text-primary);
+                background: var(--bg-blue-light);
+                transition: all 0.2s ease;
+                font-family: 'Rubik', sans-serif;
+            }
+
+            .form-input:focus {
+                outline: none;
+                border-color: var(--primary);
+                background: white;
+                box-shadow: 0 0 0 3px rgba(29, 103, 205, 0.1);
+            }
+
+            .form-input::placeholder {
+                color: var(--text-secondary);
+                opacity: 0.7;
+            }
+
+            .submit-button {
+                background: var(--primary);
+                color: white;
+                border: none;
+                padding: 1rem 2rem;
+                border-radius: 12px;
+                font-size: 1.125rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                margin-top: 1rem;
+                width: 100%;
+                font-family: 'Rubik', sans-serif;
+            }
+
+            .submit-button:hover {
+                background: var(--primary-hover);
+                transform: translateY(-1px);
+            }
+
+            .success-message {
+                text-align: center;
+                padding: 2rem 1rem;
+            }
+
+            .success-icon {
+                width: 64px;
+                height: 64px;
+                background: #16a34a;
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 1.5rem;
+                padding: 1rem;
+            }
+
+            .success-message h2 {
+                font-size: 1.5rem;
+                font-weight: 600;
+                color: var(--text-primary);
+                margin-bottom: 1rem;
+                font-family: 'Rubik', sans-serif;
+            }
+
+            .success-message p {
+                color: var(--text-secondary);
+                font-size: 1.125rem;
+                font-family: 'Rubik', sans-serif;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+function determineEligibility(eligibilityFactors) {
+    const hasJobChange = eligibilityFactors.includes('job_changes');
+    const hasMultipleJobs = eligibilityFactors.includes('multiple_jobs');
+    const hasPrivateSavings = eligibilityFactors.includes('private_savings');
+    const hasSpecialCredits = eligibilityFactors.includes('special_credits');
+    const hasMedicalStatus = eligibilityFactors.includes('medical_status');
+    const hasPropertyTax = eligibilityFactors.includes('property_tax');
+    const hasHighSalary = eligibilityFactors.includes('salary_level');
+
+    if (hasJobChange || hasMultipleJobs) return true;
+    if (hasPrivateSavings && (hasSpecialCredits || hasMedicalStatus)) return true;
+    if (hasSpecialCredits && hasMedicalStatus) return true;
+    if (hasPropertyTax) return true;
+    if (hasHighSalary && (hasSpecialCredits || hasMedicalStatus)) return true;
+    
+    return totalScore >= 50;
+}
+
+function calculateEstimatedRefund(eligibilityFactors) {
+    let baseAmount = 0;
+    
+    eligibilityFactors.forEach(factor => {
+        switch(factor) {
+            case 'job_changes':
+                baseAmount += 2500;
+                break;
+            case 'multiple_jobs':
+                baseAmount += 3000;
+                break;
+            case 'private_savings':
+                baseAmount += 1500;
+                break;
+            case 'special_credits':
+                baseAmount += 2000;
+                break;
+            case 'medical_status':
+                baseAmount += 3500;
+                break;
+            case 'property_tax':
+                baseAmount += 4000;
+                break;
+            case 'salary_level':
+                const salaryLevel = userAnswers['salary_level'];
+                if (salaryLevel >= 1) baseAmount += 1000;
+                if (salaryLevel >= 2) baseAmount += 1500;
+                if (salaryLevel >= 3) baseAmount += 2000;
+                break;
+        }
+    });
+    
+    const variation = Math.floor(Math.random() * (baseAmount * 0.1));
+    return Math.max(1500, baseAmount + variation);
+}
+
+function submitForm() {
+    const fullName = document.getElementById('fullName').value;
+    const phone = document.getElementById('phone').value;
+
+    if (!fullName || !phone || phone.length !== 10) {
+        alert('נא למלא את כל השדות בצורה תקינה');
+        return;
+    }
+
+    // מכין את הנתונים לשליחה
+    const eligibilityFactors = calculateScore();
+    const isEligible = determineEligibility(eligibilityFactors);
+    const estimatedRefund = calculateEstimatedRefund(eligibilityFactors);
+
+    // אוסף את כל המידע מהשאלון
+    const submissionData = {
+        fullName: fullName,
+        phone: phone,
+        
+        // תשובות השאלון
+        employment_status: questions[0].options[userAnswers['employment_status']],
+        job_changes: questions[1].options[userAnswers['job_changes']],
+        multiple_jobs: questions[2].options[userAnswers['multiple_jobs']],
+        salary_level: questions[3].options[userAnswers['salary_level']],
+        private_savings: Array.isArray(userAnswers['private_savings']) 
+            ? userAnswers['private_savings'].map(index => questions[4].options[index]).join(', ')
+            : '',
+        property_tax: questions[5].options[userAnswers['property_tax']],
+        capital_market: questions[6].options[userAnswers['capital_market']],
+        special_credits: Array.isArray(userAnswers['special_credits'])
+            ? userAnswers['special_credits'].map(index => questions[7].options[index]).join(', ')
+            : '',
+        education: questions[8].options[userAnswers['education']],
+        medical_status: Array.isArray(userAnswers['medical_status'])
+            ? userAnswers['medical_status'].map(index => questions[9].options[index]).join(', ')
+            : '',
+        residence: questions[10].options[userAnswers['residence']],
+        
+        // נתוני תוצאה
+        isEligible: isEligible,
+        estimatedRefund: estimatedRefund,
+        totalScore: totalScore
+    };
+
+    // שולח את הנתונים לוויקס
+    try {
+        window.parent.postMessage({
+            type: 'taxRefundSubmission',
+            data: submissionData
+        }, '*');
+
+        // מציג הודעת הצלחה
+        const container = document.getElementById('questionContainer');
+        container.innerHTML = `
+            <div class="success-message">
+                <div class="success-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                </div>
+                <h2>תודה שפנית אלינו!</h2>
+                <p>נציג מקצועי יצור איתך קשר בהקדם לבדיקת הזכאות המלאה שלך</p>
+            </div>
+        `;
+    } catch (error) {
+        console.error('שגיאה בשליחת הנתונים:', error);
+        alert('אירעה שגיאה בשליחת הטופס. אנא נסה שוב.');
+    }
+}
+
+function showNotEligibleResult() {
+    const container = document.getElementById('questionContainer');
+    container.innerHTML = `
+        <div class="not-eligible-message">
+            <h2 class="result-title">השירות מיועד לשכירים בלבד</h2>
+            <button onclick="startOver()" class="submit-button">חזרה להתחלה</button>
+        </div>
+    `;
+}
+
+function startOver() {
+    currentQuestion = 0;
+    userAnswers = {};
+    totalScore = 0;
+    startQuiz();
+}
+</script>
+
+</body></html>
